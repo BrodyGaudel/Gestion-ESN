@@ -69,9 +69,15 @@ public class DepartmentRestController {
 
     @GetMapping("/{enterpriseId}/page")
     @ResponseBody
-    DepartmentsDTO getDepartments(@PathVariable Long enterpriseId,
+    public DepartmentsDTO getDepartments(@PathVariable Long enterpriseId,
                                   @RequestParam(name ="page", defaultValue = "0") int page,
                                   @RequestParam(name ="size", defaultValue = "5") int size) throws EnterpriseNotFoundException{
         return departmentService.getDepartments(enterpriseId,page,size);
+    }
+
+    @GetMapping("/json")
+    @ResponseBody
+    public DepartmentDTO json(){
+        return new DepartmentDTO();
     }
 }
