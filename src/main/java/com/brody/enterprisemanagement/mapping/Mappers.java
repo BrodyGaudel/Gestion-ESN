@@ -3,9 +3,8 @@ package com.brody.enterprisemanagement.mapping;
 import com.brody.enterprisemanagement.dto.DepartmentDTO;
 import com.brody.enterprisemanagement.dto.EmployeeDTO;
 import com.brody.enterprisemanagement.dto.EnterpriseDTO;
-import com.brody.enterprisemanagement.entities.Department;
-import com.brody.enterprisemanagement.entities.Employee;
-import com.brody.enterprisemanagement.entities.Enterprise;
+import com.brody.enterprisemanagement.dto.MissionDTO;
+import com.brody.enterprisemanagement.entities.*;
 
 import java.util.List;
 
@@ -19,5 +18,10 @@ public interface Mappers {
     Employee fromEmployeeDTO(EmployeeDTO employeeDTO);
     EmployeeDTO fromEmployee(Employee employee);
     List<EmployeeDTO> fromListOfEmployees(List<Employee> employees);
+
+    Mission fromMissionDTO(MissionDTO missionDTO);
+    MissionDTO fromMission(Mission mission);
+    MissionDTO fromMission(MissionExternal mission);
+    List<MissionDTO> fromListOfMissions(List<Mission> missions);
 
 }

@@ -57,4 +57,10 @@ public class EnterpriseRestController {
     public void deleteAll(){
         enterpriseService.deleteAll();
     }
+
+    @GetMapping("/json")
+    @ResponseBody
+    public EnterpriseDTO json(){
+        return new EnterpriseDTO();
+    }
 }

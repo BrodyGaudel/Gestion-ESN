@@ -89,8 +89,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department department = departmentRepository.findById(departmentDTO.getId())
                 .orElseThrow( () -> new DepartmentNotFoundException("department that you want to updated is not found"));
 
-        Enterprise enterprise = enterpriseRepository.findById(departmentDTO.getEnterpriseId())
-                .orElseThrow( () -> new EnterpriseNotFoundException("enterprise not found or have been deleted"));
+        Enterprise enterprise = getEnterprise(departmentDTO.getEnterpriseId());
 
         department.setEnterprise(enterprise);
         department.setName(departmentDTO.getName());
@@ -127,8 +126,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public DepartmentsDTO getDepartments(Long enterpriseId, int page, int size) throws EnterpriseNotFoundException {
         log.info("In getDepartments()");
-        Enterprise enterprise = enterpriseRepository.findById(enterpriseId)
-                .orElseThrow( () -> new EnterpriseNotFoundException("enterprise not found or have been deleted"));
+        Enterprise enterprise = getEnterprise(enterpriseId);
 
         Page<Department> departmentPage = departmentRepository
                 .findByEnterpriseIdOrderByNameDesc(enterpriseId, PageRequest.of(page, size));
@@ -145,5 +143,10 @@ public class DepartmentServiceImpl implements DepartmentService {
 
         log.info("department(s) gotten");
         return departmentsDTO;
+    }
+
+    private Enterprise getEnterprise(Long id) throws EnterpriseNotFoundException {
+        return enterpriseRepository.findById(id)
+                .orElseThrow( () -> new EnterpriseNotFoundException("enterprise not found or have been deleted"));
     }
 }

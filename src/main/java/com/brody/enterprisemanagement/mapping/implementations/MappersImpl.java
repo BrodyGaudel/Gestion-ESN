@@ -3,10 +3,8 @@ package com.brody.enterprisemanagement.mapping.implementations;
 import com.brody.enterprisemanagement.dto.DepartmentDTO;
 import com.brody.enterprisemanagement.dto.EmployeeDTO;
 import com.brody.enterprisemanagement.dto.EnterpriseDTO;
-import com.brody.enterprisemanagement.entities.Contract;
-import com.brody.enterprisemanagement.entities.Department;
-import com.brody.enterprisemanagement.entities.Employee;
-import com.brody.enterprisemanagement.entities.Enterprise;
+import com.brody.enterprisemanagement.dto.MissionDTO;
+import com.brody.enterprisemanagement.entities.*;
 import com.brody.enterprisemanagement.mapping.Mappers;
 import org.springframework.stereotype.Service;
 
@@ -127,6 +125,77 @@ public class MappersImpl implements Mappers {
     public List<EmployeeDTO> fromListOfEmployees(List<Employee> employees) {
         try{
             return employees.stream().map(this::fromEmployee).toList();
+        }catch (Exception e){
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public Mission fromMissionDTO(MissionDTO missionDTO) {
+        try{
+            Department department = new Department();
+            department.setId(missionDTO.getDepartmentId());
+
+            if(missionDTO.getEmailBilling() == null || missionDTO.getAverageDailyRate()==null){
+                Mission mission = new Mission();
+                mission.setDepartment(department);
+                mission.setName(missionDTO.getName());
+                mission.setDescription(missionDTO.getDescription());
+                return mission;
+            }else {
+                MissionExternal mission = new MissionExternal();
+                mission.setDepartment(department);
+                mission.setName(missionDTO.getName());
+                mission.setDescription(missionDTO.getDescription());
+                mission.setAverageDailyRate(missionDTO.getAverageDailyRate());
+                mission.setEmailBilling(mission.getEmailBilling());
+                return mission;
+            }
+
+
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+    @Override
+    public MissionDTO fromMission(Mission mission) {
+        try{
+            MissionDTO missionDTO = new MissionDTO();
+            missionDTO.setId(mission.getId());
+            missionDTO.setName(mission.getName());
+            missionDTO.setDescription(mission.getDescription());
+            missionDTO.setDepartmentId(mission.getDepartment().getId());
+            if(mission instanceof MissionExternal missionExternal){
+                missionDTO.setEmailBilling(missionExternal.getEmailBilling());
+                missionDTO.setAverageDailyRate(missionExternal.getAverageDailyRate());
+            }
+            return missionDTO;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+    @Override
+    public MissionDTO fromMission(MissionExternal mission) {
+        try{
+            MissionDTO missionDTO = new MissionDTO();
+            missionDTO.setId(mission.getId());
+            missionDTO.setName(mission.getName());
+            missionDTO.setEmailBilling(mission.getEmailBilling());
+            missionDTO.setAverageDailyRate(mission.getAverageDailyRate());
+            missionDTO.setDescription(mission.getDescription());
+
+            return missionDTO;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+    @Override
+    public List<MissionDTO> fromListOfMissions(List<Mission> missions) {
+        try{
+            return missions.stream().map(this::fromMission).toList();
         }catch (Exception e){
             return Collections.emptyList();
         }

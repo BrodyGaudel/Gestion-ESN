@@ -19,6 +19,8 @@ import java.util.List;
 @Slf4j
 public class EmployeeServiceImpl implements EmployeeService {
 
+    private static final String EMPLOYEE_FOUND = "employee";
+
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
     private final Mappers mappers;
@@ -33,9 +35,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeDTO findById(Long id) throws EmployeeNotFoundException {
         log.info("In findById()");
-        Employee employee = employeeRepository.findById(id)
-                .orElseThrow( ()-> new EmployeeNotFoundException("employee not found"));
-        log.info("employee found");
+        Employee employee = getEmployee(id);
+        log.info(EMPLOYEE_FOUND);
         return mappers.fromEmployee(employee);
     }
 
@@ -47,7 +48,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<Employee> employees = new ArrayList<>();
         employees.addAll(employees1);
         employees.addAll(employees2);
-        log.info("employee(s) found");
+        log.info(EMPLOYEE_FOUND);
         return mappers.fromListOfEmployees(employees);
     }
 
@@ -55,7 +56,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<EmployeeDTO> findAll() {
         log.info("In findAll()");
         List<Employee> employees = employeeRepository.findAll();
-        log.info("employee found");
+        log.info(EMPLOYEE_FOUND);
         return mappers.fromListOfEmployees(employees);
     }
 
@@ -73,7 +74,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 }
             }
         }
-        log.info("employee found");
+        log.info(EMPLOYEE_FOUND);
         return mappers.fromListOfEmployees(employeeList);
     }
 
@@ -94,8 +95,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeDTO update(EmployeeDTO employeeDTO) throws EmployeeNotFoundException {
         log.info("In update()");
-        Employee employee = employeeRepository.findById(employeeDTO.getId())
-                .orElseThrow( () -> new EmployeeNotFoundException("employee that you want to update doesn't found"));
+        Employee employee = getEmployee(employeeDTO.getId());
 
         employee.setName(employeeDTO.getName());
         employee.setFirstname(employeeDTO.getFirstname());
@@ -125,11 +125,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Boolean addEmployeeToDepartment(Long idEmployee, Long idDepartment) throws EmployeeNotFoundException, DepartmentNotFoundException {
         log.info("In addEmployeeToDepartment()");
-        Employee employee = employeeRepository.findById(idEmployee)
-                .orElseThrow( ()-> new EmployeeNotFoundException("employee does not exist"));
-
-        Department department = departmentRepository.findById(idDepartment)
-                .orElseThrow( () -> new DepartmentNotFoundException("department does not exist"));
+        Employee employee = getEmployee(idEmployee);
+        Department department = getDepartment(idDepartment);
 
         List<Department> departments = employee.getDepartments();
         List<Employee> employees = department.getEmployees();
@@ -147,11 +144,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Boolean deleteEmployeeFromDepartment(Long idEmployee, Long idDepartment) throws EmployeeNotFoundException, DepartmentNotFoundException {
-        Department department = departmentRepository.findById(idDepartment)
-                .orElseThrow( () -> new DepartmentNotFoundException("department does not exist"));
-
-        Employee employee = employeeRepository.findById(idEmployee)
-                .orElseThrow( ()-> new EmployeeNotFoundException("employee does not exist"));
+        Employee employee = getEmployee(idEmployee);
+        Department department = getDepartment(idDepartment);
 
         List<Department> departments = employee.getDepartments();
         List<Employee> employees = department.getEmployees();
@@ -174,5 +168,14 @@ public class EmployeeServiceImpl implements EmployeeService {
             return false;
         }
 
+    }
+
+    private Employee getEmployee(Long id) throws EmployeeNotFoundException {
+        return employeeRepository.findById(id)
+                .orElseThrow( ()-> new EmployeeNotFoundException("employee does not exist"));
+    }
+    private Department getDepartment(Long id) throws DepartmentNotFoundException {
+        return departmentRepository.findById(id)
+                .orElseThrow( () -> new DepartmentNotFoundException("department does not exist"));
     }
 }
